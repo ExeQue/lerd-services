@@ -14,6 +14,7 @@
 <p align="center">
   <img src=".github/logos/adminer.svg" width="38" height="38" alt="adminer" title="adminer">
   <img src=".github/logos/clickhouse.svg" width="38" height="38" alt="clickhouse" title="clickhouse">
+  <img src=".github/logos/dragonfly.svg" width="38" height="38" alt="dragonfly" title="dragonfly">
   <img src=".github/logos/elasticsearch.svg" width="38" height="38" alt="elasticsearch" title="elasticsearch">
   <img src=".github/logos/floci.svg" width="38" height="38" alt="floci" title="floci">
   <img src=".github/logos/kafka.svg" width="38" height="38" alt="kafka" title="kafka">
