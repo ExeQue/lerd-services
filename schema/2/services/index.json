@@ -398,7 +398,7 @@
     {
       "name": "umami",
       "description": "Umami privacy-focused web analytics, backed by the lerd Postgres service (login: admin / umami)",
-      "dashboard": "http://localhost:3001",
+      "dashboard": "http://localhost:3002",
       "depends_on": [
         "postgres"
       ],

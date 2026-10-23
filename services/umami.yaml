@@ -2,7 +2,7 @@ name: umami
 image: ghcr.io/umami-software/umami:3.4
 description: "Umami privacy-focused web analytics, backed by the lerd Postgres service (login: admin / umami)"
 ports:
-- 3001:3000
+- 3002:3000
 environment:
   DATABASE_URL: postgresql://postgres:lerd@lerd-postgres:5432/lerd?schema=umami
   APP_SECRET: lerd
@@ -10,7 +10,7 @@ environment:
   ALLOWED_FRAME_URLS: http://localhost:7073 http://127.0.0.1:7073 https://lerd.test http://lerd.test http://lerd.localhost
 depends_on:
 - postgres
-dashboard: http://localhost:3001
+dashboard: http://localhost:3002
 category: other
 icon: bolt
 color: "#000000"
@@ -22,6 +22,6 @@ env_vars:
 env_detect:
   key: UMAMI_SCRIPT_URL
 # The tracker script is loaded by the browser from the app's own HTTPS origin,
-# so the service is served on umami.test rather than only at localhost:3001.
+# so the service is served on umami.test rather than only at localhost:3002.
 # Remove it with: lerd service domain umami --remove
 domain: umami
