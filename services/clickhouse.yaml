@@ -1,4 +1,5 @@
 name: clickhouse
+label: "ClickHouse"
 image: docker.io/library/clickhouse:26.3
 description: ClickHouse column-oriented analytics database
 family: clickhouse
