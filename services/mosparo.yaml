@@ -97,12 +97,20 @@ files:
     $kernel->boot();
     $entityManager = $kernel->getContainer()->get('doctrine')->getManager();
 
+    // mosparo only answers CORS for origins in a project's hosts. One wildcard
+    // covers every lerd site, its aliases and its worktrees.
+    $hosts = ['*.test'];
+
     $uuid = 'lerd-' . $site;
-    if ($entityManager->getRepository(Mosparo\Entity\Project::class)->findOneBy(['uuid' => $uuid])) {
+    $existing = $entityManager->getRepository(Mosparo\Entity\Project::class)->findOneBy(['uuid' => $uuid]);
+    if ($existing) {
+        $existing->setHosts($hosts);
+        $entityManager->flush();
         return;
     }
 
     $project = new Mosparo\Entity\Project();
+    $project->setHosts($hosts);
     $project->setName($site);
     $project->setPublicKey('lerd-' . $site . '-public');
     $project->setPrivateKey('lerd-' . $site . '-private');
