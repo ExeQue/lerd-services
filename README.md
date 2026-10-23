@@ -145,7 +145,7 @@ New services and version bumps are welcome — this store is only as good as the
 1. Fork this repo
 2. Add or update `services/<name>.yaml`
 3. Optionally add the service's own mark as `services/<name>.svg` (see below), then run `python3 .github/scripts/readme_logos.py` to draw its tile for this README
-4. Add or update the matching entry in `services/index.json` (name, description, and optionally family, dashboard, depends_on)
+4. Add or update the matching entry in `services/index.json` (name, description, and optionally label, family, dashboard, depends_on)
 5. Open a pull request
 
 Keep images pinned to a specific tag or a `track_latest` family; avoid `:latest` for anything that stores data.
@@ -195,15 +195,20 @@ extensions:                # postgres engines only: what the image can create
 
 ### How a preset appears in the dashboard
 
-Three fields decide that, and all three live here rather than in lerd, so a new
+Four fields decide that, and all four live here rather than in lerd, so a new
 service looks right the day it lands:
 
 ```yaml
+label: "MariaDB"       # the name it is shown under; omit it when capitalizing
+                       # the name already spells it right (mongo-express)
 category: databases    # discovery section: databases, cache, messaging, search,
                        # mail, admin, storage, testing, other
 icon: database         # one of lerd's built-in glyphs
 color: "#003545"       # the brand colour its mark is tinted with
 ```
+
+Set `label` in the preset and in its `index.json` entry. A lerd that predates the
+key ignores it and keeps naming the service as it always has.
 
 `color` must be a plain hex literal, `#003545` or `#abc`. Anything else, a colour
 function or a CSS variable, is dropped and the service falls back to its
