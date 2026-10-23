@@ -80,6 +80,53 @@ files:
         session:
             cookie_samesite: none
             cookie_secure: true
+- target: /lerd/site-init.php
+  # One project per site, owned by the admin, with the uuid and keys env_vars
+  # writes. mosparo generates both at random, so they are set here instead.
+  content: |
+    <?php
+    $site = $argv[1] ?? '';
+    if (!preg_match('/^[a-z0-9_]+$/', $site)) {
+        fwrite(STDERR, "invalid site handle: $site\n");
+        exit(1);
+    }
+
+    require '/mosparo/vendor/autoload.php';
+    (new Symfony\Component\Dotenv\Dotenv())->bootEnv('/mosparo/.env');
+    $kernel = new Mosparo\Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
+    $kernel->boot();
+    $entityManager = $kernel->getContainer()->get('doctrine')->getManager();
+
+    $uuid = 'lerd-' . $site;
+    if ($entityManager->getRepository(Mosparo\Entity\Project::class)->findOneBy(['uuid' => $uuid])) {
+        return;
+    }
+
+    $project = new Mosparo\Entity\Project();
+    $project->setName($site);
+    $project->setPublicKey('lerd-' . $site . '-public');
+    $project->setPrivateKey('lerd-' . $site . '-private');
+    // No setter: the constructor assigns a random uuid.
+    (new ReflectionProperty($project, 'uuid'))->setValue($project, $uuid);
+
+    $member = new Mosparo\Entity\ProjectMember();
+    $member->setProject($project);
+    $member->setUser($entityManager->getRepository(Mosparo\Entity\User::class)->findOneBy(['email' => 'admin@lerd.test']));
+    $member->setRole(Mosparo\Entity\ProjectMember::ROLE_OWNER);
+
+    $entityManager->persist($project);
+    $entityManager->persist($member);
+    $entityManager->flush();
+env_vars:
+- MOSPARO_HOST=https://mosparo.test
+- MOSPARO_UUID=lerd-{{site}}
+- MOSPARO_PUBLIC_KEY=lerd-{{site}}-public
+- MOSPARO_PRIVATE_KEY=lerd-{{site}}-private
+env_detect:
+  key: MOSPARO_HOST
+site_init:
+  # Run as root by lerd env, so ownership goes back to the web server's user.
+  exec: sh -c "php /lerd/site-init.php {{site}} && chown -R www-data /mosparo-data"
 dashboard: http://localhost:8088
 category: other
 icon: bolt
