@@ -74,6 +74,12 @@ files:
         clickjacking:
             paths:
                 '^/.*': ALLOW
+    # Framed from another site, a Lax session cookie is withheld on the login
+    # POST and every form fails its CSRF check. Secure is accepted on localhost.
+    framework:
+        session:
+            cookie_samesite: none
+            cookie_secure: true
 dashboard: http://localhost:8088
 category: other
 icon: bolt
