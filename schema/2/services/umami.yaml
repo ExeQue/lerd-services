@@ -1,0 +1,36 @@
+name: umami
+image: ghcr.io/umami-software/umami:3.4
+description: "Umami privacy-focused web analytics, backed by the lerd Postgres service (login: admin / umami)"
+ports:
+- 3002:3000
+environment:
+  DATABASE_URL: postgresql://postgres:lerd@lerd-postgres:5432/postgres?schema=umami
+  APP_SECRET: lerd
+  # lerd UI embeds the dashboard in an iframe; umami defaults to frame-ancestors 'self'
+  ALLOWED_FRAME_URLS: http://localhost:7073 http://127.0.0.1:7073 https://lerd.test http://lerd.test http://lerd.localhost
+depends_on:
+- postgres
+dashboard: http://localhost:3002
+# The image's base path is fixed at build time, so the dashboard cannot be
+# proxied and its form filled; lerd logs in through the API and opens /sso.
+dashboard_token_login:
+  request: /api/auth/login
+  body:
+    username: UMAMI_USERNAME
+    password: UMAMI_PASSWORD
+  token: token
+  open: /sso?token={token}&url={path}
+category: other
+icon: bolt
+color: "#000000"
+env_vars:
+- UMAMI_SCRIPT_URL=http://localhost:3002/script.js
+- UMAMI_API_URL=http://lerd-umami:3000
+- UMAMI_USERNAME=admin
+- UMAMI_PASSWORD=umami
+env_detect:
+  key: UMAMI_SCRIPT_URL
+# The tracker script is loaded by the browser from the app's own HTTPS origin,
+# so the service is served on its own domain, and lerd env rewrites the
+# localhost URLs above to it. Remove it with: lerd service domain umami --remove
+domain: umami
