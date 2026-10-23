@@ -152,6 +152,8 @@ New services and version bumps are welcome — this store is only as good as the
 
 Keep images pinned to a specific tag or a `track_latest` family; avoid `:latest` for anything that stores data.
 
+`.github/scripts/preset_lint.py` checks every pull request for what makes a preset complete: a `label`, a file named after `name`, a plain hex `color`, no `.test` domain written into `env_vars` or `dashboard` (write the container or localhost URL, which `lerd env` points at the service's domain once it has one), a pinned image on any preset with a `data_dir`, and an `index.json` entry that says what its preset says. Run it before opening one.
+
 ### Preset schema
 
 Definitions live under `services/`: an `index.json` catalogue plus one `<name>.yaml` per preset. A minimal preset:
