@@ -1,4 +1,5 @@
 name: localstack
+label: "LocalStack"
 image: docker.io/localstack/localstack:4.14
 # Pinned to the 4.x line on purpose. The tags past it are a licensed build that
 # quits on start without an auth token, so "latest" is not a free LocalStack any

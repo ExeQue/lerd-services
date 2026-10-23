@@ -25,6 +25,7 @@
     },
     {
       "name": "clickhouse",
+      "label": "ClickHouse",
       "description": "ClickHouse column-oriented analytics database",
       "family": "clickhouse",
       "dashboard": "http://localhost:8123/play?user=lerd&password=lerd",
@@ -72,6 +73,7 @@
     },
     {
       "name": "kafka-ui",
+      "label": "Kafka UI",
       "description": "Kafbat UI web console for the lerd Kafka service",
       "dashboard": "http://localhost:8087",
       "image": "ghcr.io/kafbat/kafka-ui:v1.5.0",
@@ -86,6 +88,7 @@
     },
     {
       "name": "localstack",
+      "label": "LocalStack",
       "description": "LocalStack, the AWS APIs (SQS, SES, DynamoDB, Secrets Manager) run locally",
       "image": "docker.io/localstack/localstack:4.14",
       "category": "testing",
@@ -94,6 +97,7 @@
     },
     {
       "name": "mariadb",
+      "label": "MariaDB",
       "description": "MariaDB (MySQL-compatible) versions",
       "family": "mariadb",
       "versions": [
@@ -157,6 +161,7 @@
     },
     {
       "name": "mongo",
+      "label": "MongoDB",
       "description": "MongoDB document database",
       "image": "docker.io/library/mongo:7",
       "category": "databases",
@@ -179,6 +184,7 @@
     },
     {
       "name": "opensearch",
+      "label": "OpenSearch",
       "description": "OpenSearch single-node search and analytics engine",
       "image": "docker.io/opensearchproject/opensearch:2.19.5",
       "category": "search",
@@ -187,6 +193,7 @@
     },
     {
       "name": "opensearch-dashboards",
+      "label": "OpenSearch Dashboards",
       "description": "OpenSearch Dashboards web UI for the lerd OpenSearch service",
       "dashboard": "http://localhost:8086",
       "depends_on": [
@@ -201,6 +208,7 @@
     },
     {
       "name": "pgadmin",
+      "label": "pgAdmin",
       "description": "pgAdmin web UI for the lerd Postgres service",
       "dashboard": "http://localhost:8081",
       "image": "docker.io/dpage/pgadmin4:latest",
@@ -217,6 +225,7 @@
     },
     {
       "name": "phpmyadmin",
+      "label": "phpMyAdmin",
       "description": "phpMyAdmin web UI for every installed lerd MySQL service",
       "dashboard": "http://localhost:8080",
       "image": "docker.io/library/phpmyadmin:latest",
@@ -233,6 +242,7 @@
     },
     {
       "name": "postgres-pgvector",
+      "label": "PostgreSQL + pgvector",
       "description": "PostgreSQL with pgvector (vector embeddings, no PostGIS)",
       "family": "postgres",
       "versions": [
@@ -263,6 +273,7 @@
     },
     {
       "name": "postgres-timescaledb",
+      "label": "PostgreSQL + TimescaleDB",
       "description": "PostgreSQL with TimescaleDB (time-series extension)",
       "family": "postgres",
       "versions": [
@@ -287,6 +298,7 @@
     },
     {
       "name": "rabbitmq",
+      "label": "RabbitMQ",
       "description": "RabbitMQ message broker with management UI",
       "dashboard": "http://localhost:15672",
       "image": "docker.io/library/rabbitmq:3-management-alpine",
@@ -296,6 +308,7 @@
     },
     {
       "name": "redisinsight",
+      "label": "RedisInsight",
       "description": "RedisInsight web UI for every installed lerd Redis and Valkey service",
       "dashboard": "http://localhost:8085",
       "image": "docker.io/redis/redisinsight:latest",
@@ -406,6 +419,7 @@
     },
     {
       "name": "mosparo",
+      "label": "mosparo",
       "description": "mosparo spam protection for forms, installed unattended on SQLite (login: admin@lerd.test / lerd)",
       "image": "docker.io/mosparo/mosparo:v1.5.12-alpine",
       "category": "other",

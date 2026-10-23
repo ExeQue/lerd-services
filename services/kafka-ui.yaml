@@ -1,4 +1,5 @@
 name: kafka-ui
+label: Kafka UI
 image: ghcr.io/kafbat/kafka-ui:v1.5.0
 description: Kafbat UI web console for the lerd Kafka service
 ports:

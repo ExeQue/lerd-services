@@ -1,4 +1,5 @@
 name: mosparo
+label: mosparo
 image: docker.io/mosparo/mosparo:v1.5.12-alpine
 description: 'mosparo spam protection for forms, installed unattended on SQLite (login:
   admin@lerd.test / lerd)'
