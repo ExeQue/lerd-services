@@ -143,3 +143,6 @@ color: "#206bc4"
 # served on mosparo.test rather than only at localhost:8088.
 # Remove it with: lerd service domain mosparo --remove
 domain: mosparo
+# Forms on a site fetch the frontend API and its assets (logo, CSS) cross-origin.
+# Turn it off with: lerd service domain mosparo --no-cors
+domain_cors: true
