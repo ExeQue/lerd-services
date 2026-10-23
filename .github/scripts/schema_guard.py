@@ -13,7 +13,6 @@ say whether the binary already knows the new value.
 Usage: schema_guard.py <published-dir> <candidate-dir> [glob]
 """
 
-import json
 import sys
 import pathlib
 import yaml
@@ -96,32 +95,6 @@ def schema_dropped_paths(root):
     return dropped
 
 
-def missing_labels(root):
-    """Presets and index entries that name no label.
-
-    lerd shows a service under its label, so every preset carries one rather
-    than leaving lerd to guess the spelling from the lowercase name.
-    """
-    missing = []
-    for path in sorted(pathlib.Path(root).rglob("*.yaml")):
-        if path.parent.name != "services":
-            continue
-        try:
-            label = load(path).get("label")
-        except yaml.YAMLError:
-            continue
-        if not isinstance(label, str) or not label.strip():
-            missing.append(f"{path.relative_to(root)}: no `label`, the name lerd shows the service under")
-    for path in sorted(pathlib.Path(root).rglob("index.json")):
-        if path.parent.name != "services":
-            continue
-        with open(path, "r", encoding="utf-8") as handle:
-            for entry in json.load(handle).get("services", []):
-                if not str(entry.get("label", "")).strip():
-                    missing.append(f"{path.relative_to(root)}: entry `{entry.get('name')}` has no `label`")
-    return missing
-
-
 def closed_sets(profiles):
     """Union every file's observed values per path, keeping the small ones."""
     merged = {}
@@ -177,15 +150,13 @@ def main():
                     f"{', '.join(sorted(enums[path]))}. Confirm every supported lerd understands it"
                 )
 
-    failures.extend(missing_labels(candidate_dir))
-
     for line in warnings:
         print(f"warning: {line}")
     for line in failures:
         print(f"error: {line}")
 
     if failures:
-        print(f"\n{len(failures)} problem(s) to fix before this can be published.")
+        print(f"\n{len(failures)} change(s) an older lerd cannot read.")
         return 1
     print(f"\nschema guard passed ({len(published)} published file(s) checked, {len(warnings)} warning(s)).")
     return 0

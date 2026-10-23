@@ -209,7 +209,7 @@ icon: database         # one of lerd's built-in glyphs
 color: "#003545"       # the brand colour its mark is tinted with
 ```
 
-Set `label` in the preset and in its `index.json` entry; the schema guard refuses
+Set `label` in the preset and in its `index.json` entry; the preset lint refuses
 a preset or an entry without one, so no name is left for lerd to guess from the
 lowercase name. A lerd that predates the key ignores it and keeps naming the
 service as it always has.
