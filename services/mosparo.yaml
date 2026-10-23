@@ -1,0 +1,84 @@
+name: mosparo
+image: docker.io/mosparo/mosparo:v1.5.12-alpine
+description: "mosparo spam protection for forms, installed unattended on SQLite (login: admin@lerd.test / lerd)"
+ports:
+- 8088:80
+data_dir: /mosparo-data
+# mosparo has no CLI installer, only the /setup wizard, so the same steps run
+# here once before the image's own start script: write the config, migrate,
+# create the admin user. A data dir that is already installed is left alone.
+exec: sh -c "php /lerd/install.php && exec /usr/bin/run"
+files:
+- target: /lerd/install.php
+  content: |
+    <?php
+    $configFile = '/mosparo-data/env.mosparo.php';
+    $config = is_file($configFile) ? (include $configFile) : [];
+    if (!empty($config['mosparo_installed'])) {
+        return;
+    }
+
+    $write = function (array $values) use ($configFile, &$config) {
+        $config = array_merge(is_array($config) ? $config : [], $values);
+        file_put_contents($configFile, '<?php' . PHP_EOL . PHP_EOL . 'return ' . var_export($config, true) . ';' . PHP_EOL);
+    };
+
+    @mkdir('/mosparo-data/var/data', 0775, true);
+    $write([
+        'database_system' => 'sqlite',
+        'database_driver' => 'pdo_sqlite',
+        'database_path' => '/mosparo-data/var/data/mosparo.db',
+        'database_version' => (new PDO('sqlite::memory:'))->query('select sqlite_version()')->fetchColumn(),
+        'mosparo_name' => 'mosparo',
+        'encryption_key' => bin2hex(random_bytes(32)),
+        'secret' => bin2hex(random_bytes(32)),
+    ]);
+    @unlink('/mosparo/config/env.mosparo.php');
+    symlink($configFile, '/mosparo/config/env.mosparo.php');
+
+    passthru('php /mosparo/bin/console doctrine:migrations:migrate -n', $exitCode);
+    if ($exitCode !== 0) {
+        exit($exitCode);
+    }
+
+    require '/mosparo/vendor/autoload.php';
+    (new Symfony\Component\Dotenv\Dotenv())->bootEnv('/mosparo/.env');
+    $kernel = new Mosparo\Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
+    $kernel->boot();
+
+    $user = new Mosparo\Entity\User();
+    $user->setEmail('admin@lerd.test');
+    // Hashed exactly as security.yaml's 'auto' does, so login never triggers a rehash.
+    $hasherFactory = new Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory(['auto' => ['algorithm' => 'auto']]);
+    $user->setPassword($hasherFactory->getPasswordHasher('auto')->hash('lerd'));
+    $user->addRole('ROLE_USER');
+    $user->addRole('ROLE_ADMIN');
+    $entityManager = $kernel->getContainer()->get('doctrine')->getManager();
+    $entityManager->persist($user);
+    $entityManager->flush();
+
+    $write([
+        'mosparo_installed' => true,
+        'mosparo_installed_version' => Mosparo\Kernel::VERSION,
+        'mosparo_initial_version' => Mosparo\Kernel::VERSION,
+        'mosparo_assets_version' => bin2hex(random_bytes(8)),
+    ]);
+- target: /mosparo/config/packages/zz_lerd.yaml
+  # lerd UI embeds the dashboard in an iframe; mosparo sends X-Frame-Options DENY
+  # and frame-ancestors 'self'. Merged over nelmio_security.yaml.
+  content: |
+    nelmio_security:
+        csp:
+            enforce:
+                frame-ancestors: [ 'http://localhost:7073', 'http://127.0.0.1:7073', 'https://lerd.test', 'http://lerd.test', 'http://lerd.localhost' ]
+        clickjacking:
+            paths:
+                '^/.*': ALLOW
+dashboard: http://localhost:8088
+category: other
+icon: bolt
+color: "#206bc4"
+# Forms load mosparo's frontend from the site's own HTTPS origin, so it is
+# served on mosparo.test rather than only at localhost:8088.
+# Remove it with: lerd service domain mosparo --remove
+domain: mosparo
