@@ -444,6 +444,16 @@
       "category": "other",
       "icon": "bolt",
       "color": "#206bc4"
+    },
+    {
+      "name": "smocker",
+      "label": "Smocker",
+      "description": "Smocker HTTP mock server for webhooks and outgoing requests, with scripted responses, delays and request history",
+      "dashboard": "http://localhost:8082",
+      "image": "ghcr.io/smocker-dev/smocker:1.0.0",
+      "category": "testing",
+      "icon": "bolt",
+      "color": "#b31729"
     }
   ]
 }

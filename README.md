@@ -32,6 +32,7 @@
   <img src=".github/logos/rabbitmq.svg" width="38" height="38" alt="rabbitmq" title="rabbitmq">
   <img src=".github/logos/redis.svg" width="38" height="38" alt="redis" title="redis">
   <img src=".github/logos/selenium.svg" width="38" height="38" alt="selenium" title="selenium">
+  <img src=".github/logos/smocker.svg" width="38" height="38" alt="smocker" title="smocker">
   <img src=".github/logos/solr.svg" width="38" height="38" alt="solr" title="solr">
   <img src=".github/logos/stripe-mock.svg" width="38" height="38" alt="stripe-mock" title="stripe-mock">
   <img src=".github/logos/umami.svg" width="38" height="38" alt="umami" title="umami">
@@ -120,6 +121,7 @@ All of it is data. None of it ships in the binary.
 | <img src=".github/logos/mosparo.svg" width="28" height="28" alt=""> | `mosparo` | mosparo spam protection for forms, the open-source captcha alternative |
 | <img src=".github/logos/rustfs.svg" width="28" height="28" alt=""> | `rustfs` | RustFS S3-compatible object storage · **built into Lerd** |
 | <img src=".github/logos/selenium.svg" width="28" height="28" alt=""> | `selenium` | Headless Chromium with a noVNC viewer for browser tests |
+| <img src=".github/logos/smocker.svg" width="28" height="28" alt=""> | `smocker` | Smocker HTTP mock server for webhooks, with scripted responses, delays and request history |
 | <img src=".github/logos/spamassassin.svg" width="28" height="28" alt=""> | `spamassassin` | SpamAssassin scoring backend for the Mailpit catcher |
 | <img src=".github/logos/stripe-mock.svg" width="28" height="28" alt=""> | `stripe-mock` | Stripe API mock server |
 
