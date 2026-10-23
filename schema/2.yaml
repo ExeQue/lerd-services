@@ -41,6 +41,8 @@ changes:
     downgrade: drop
   - path: dashboard_scheme_key
     downgrade: drop
+  - path: dashboard_token_login
+    downgrade: drop
 
   # This one is not cosmetic. Schema 2 proxies a dashboard at /_svc/<name>/ and
   # strips the upstream's X-Frame-Options and frame-ancestors on the way through.
