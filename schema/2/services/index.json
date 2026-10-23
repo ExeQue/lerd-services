@@ -408,6 +408,15 @@
       ]
     },
     {
+      "name": "mosparo",
+      "description": "mosparo spam protection for forms, installed unattended on SQLite (login: admin@lerd.test / lerd)",
+      "dashboard": "http://localhost:8088",
+      "image": "docker.io/mosparo/mosparo:v1.5.12-alpine",
+      "category": "other",
+      "icon": "bolt",
+      "color": "#206bc4"
+    },
+    {
       "name": "spamassassin",
       "description": "SpamAssassin scoring backend for the Mailpit catcher",
       "family": "spamassassin",

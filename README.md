@@ -24,6 +24,7 @@
   <img src=".github/logos/meilisearch.svg" width="38" height="38" alt="meilisearch" title="meilisearch">
   <img src=".github/logos/mercure.svg" width="38" height="38" alt="mercure" title="mercure">
   <img src=".github/logos/mongo.svg" width="38" height="38" alt="mongo" title="mongo">
+  <img src=".github/logos/mosparo.svg" width="38" height="38" alt="mosparo" title="mosparo">
   <img src=".github/logos/mysql.svg" width="38" height="38" alt="mysql" title="mysql">
   <img src=".github/logos/opensearch.svg" width="38" height="38" alt="opensearch" title="opensearch">
   <img src=".github/logos/phpmyadmin.svg" width="38" height="38" alt="phpmyadmin" title="phpmyadmin">
@@ -116,6 +117,7 @@ All of it is data. None of it ships in the binary.
 | <img src=".github/logos/gotenberg.svg" width="28" height="28" alt=""> | `gotenberg` | Gotenberg API for PDF and document conversion |
 | <img src=".github/logos/localstack.svg" width="28" height="28" alt=""> | `localstack` | LocalStack, the AWS APIs run locally (SQS, SES, DynamoDB, Secrets Manager) |
 | <img src=".github/logos/mailpit.svg" width="28" height="28" alt=""> | `mailpit` | Mailpit SMTP catcher with a web inbox · **built into Lerd** |
+| <img src=".github/logos/mosparo.svg" width="28" height="28" alt=""> | `mosparo` | mosparo spam protection for forms, the open-source captcha alternative |
 | <img src=".github/logos/rustfs.svg" width="28" height="28" alt=""> | `rustfs` | RustFS S3-compatible object storage · **built into Lerd** |
 | <img src=".github/logos/selenium.svg" width="28" height="28" alt=""> | `selenium` | Headless Chromium with a noVNC viewer for browser tests |
 | <img src=".github/logos/spamassassin.svg" width="28" height="28" alt=""> | `spamassassin` | SpamAssassin scoring backend for the Mailpit catcher |

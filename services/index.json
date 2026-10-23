@@ -403,6 +403,14 @@
       "depends_on": [
         "postgres"
       ]
+    },
+    {
+      "name": "mosparo",
+      "description": "mosparo spam protection for forms, installed unattended on SQLite (login: admin@lerd.test / lerd)",
+      "image": "docker.io/mosparo/mosparo:v1.5.12-alpine",
+      "category": "other",
+      "icon": "bolt",
+      "color": "#206bc4"
     }
   ]
 }

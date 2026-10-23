@@ -1,0 +1,172 @@
+name: mosparo
+image: docker.io/mosparo/mosparo:v1.5.12-alpine
+description: "mosparo spam protection for forms, installed unattended on SQLite (login: admin@lerd.test / lerd)"
+ports:
+- 8088:80
+data_dir: /mosparo-data
+# The admin the installer creates, and the login the dashboard is filled with.
+environment:
+  MOSPARO_ADMIN_EMAIL: admin@lerd.test
+  MOSPARO_ADMIN_PASSWORD: lerd
+# mosparo has no CLI installer, only the /setup wizard, so the same steps run
+# here once before the image's own start script: write the config, migrate,
+# create the admin user. A data dir that is already installed is left alone.
+exec: sh -c "php /lerd/install.php && exec /usr/bin/run"
+files:
+- target: /lerd/install.php
+  content: |
+    <?php
+    $configFile = '/mosparo-data/env.mosparo.php';
+    $config = is_file($configFile) ? (include $configFile) : [];
+    if (!empty($config['mosparo_installed'])) {
+        return;
+    }
+
+    $write = function (array $values) use ($configFile, &$config) {
+        $config = array_merge(is_array($config) ? $config : [], $values);
+        file_put_contents($configFile, '<?php' . PHP_EOL . PHP_EOL . 'return ' . var_export($config, true) . ';' . PHP_EOL);
+    };
+
+    @mkdir('/mosparo-data/var/data', 0775, true);
+    $write([
+        'database_system' => 'sqlite',
+        'database_driver' => 'pdo_sqlite',
+        'database_path' => '/mosparo-data/var/data/mosparo.db',
+        'database_version' => (new PDO('sqlite::memory:'))->query('select sqlite_version()')->fetchColumn(),
+        'mosparo_name' => 'mosparo',
+        'encryption_key' => bin2hex(random_bytes(32)),
+        'secret' => bin2hex(random_bytes(32)),
+    ]);
+    @unlink('/mosparo/config/env.mosparo.php');
+    symlink($configFile, '/mosparo/config/env.mosparo.php');
+
+    passthru('php /mosparo/bin/console doctrine:migrations:migrate -n', $exitCode);
+    if ($exitCode !== 0) {
+        exit($exitCode);
+    }
+
+    require '/mosparo/vendor/autoload.php';
+    (new Symfony\Component\Dotenv\Dotenv())->bootEnv('/mosparo/.env');
+    $kernel = new Mosparo\Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
+    $kernel->boot();
+
+    $user = new Mosparo\Entity\User();
+    $user->setEmail(getenv('MOSPARO_ADMIN_EMAIL'));
+    // Hashed exactly as security.yaml's 'auto' does, so login never triggers a rehash.
+    $hasherFactory = new Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory(['auto' => ['algorithm' => 'auto']]);
+    $user->setPassword($hasherFactory->getPasswordHasher('auto')->hash(getenv('MOSPARO_ADMIN_PASSWORD')));
+    $user->addRole('ROLE_USER');
+    $user->addRole('ROLE_ADMIN');
+    $entityManager = $kernel->getContainer()->get('doctrine')->getManager();
+    $entityManager->persist($user);
+    $entityManager->flush();
+
+    $write([
+        'mosparo_installed' => true,
+        'mosparo_installed_version' => Mosparo\Kernel::VERSION,
+        'mosparo_initial_version' => Mosparo\Kernel::VERSION,
+        'mosparo_assets_version' => bin2hex(random_bytes(8)),
+    ]);
+- target: /mosparo/config/packages/zz_lerd.yaml
+  # lerd UI embeds the dashboard in an iframe; mosparo sends X-Frame-Options DENY
+  # and frame-ancestors 'self'. Merged over nelmio_security.yaml.
+  content: |
+    nelmio_security:
+        csp:
+            enforce:
+                frame-ancestors: [ 'http://localhost:7073', 'http://127.0.0.1:7073', 'https://lerd.test', 'http://lerd.test', 'http://lerd.localhost' ]
+        clickjacking:
+            paths:
+                '^/.*': ALLOW
+    # Framed from another site, a Lax session cookie is withheld on the login
+    # POST and every form fails its CSRF check. Secure is accepted on localhost.
+    framework:
+        session:
+            cookie_samesite: none
+            cookie_secure: true
+    # site-init.php renders a new project's CSS through this otherwise private service.
+    services:
+        lerd.design_helper:
+            alias: Mosparo\Helper\DesignHelper
+            public: true
+- target: /lerd/site-init.php
+  # One project every site shares, owned by the admin, with the uuid and keys
+  # env_vars writes. The Symfony bundle refuses a uuid that is not a real UUID,
+  # and env_vars cannot derive one per site, so a fixed one serves them all.
+  content: |
+    <?php
+    require '/mosparo/vendor/autoload.php';
+    (new Symfony\Component\Dotenv\Dotenv())->bootEnv('/mosparo/.env');
+    $kernel = new Mosparo\Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
+    $kernel->boot();
+    $entityManager = $kernel->getContainer()->get('doctrine')->getManager();
+
+    // mosparo only answers CORS for origins in a project's hosts. One wildcard
+    // covers every lerd site, its aliases and its worktrees.
+    $hosts = ['*.test'];
+
+    $uuid = '6c657264-0000-4000-8000-000000000001';
+    $existing = $entityManager->getRepository(Mosparo\Entity\Project::class)->findOneBy(['uuid' => $uuid]);
+    if ($existing) {
+        $existing->setHosts($hosts);
+        $entityManager->flush();
+        return;
+    }
+
+    $project = new Mosparo\Entity\Project();
+    $project->setHosts($hosts);
+    $project->setName('lerd');
+    $project->setPublicKey('lerd-public');
+    $project->setPrivateKey('lerd-private');
+    // No setter: the constructor assigns a random uuid.
+    (new ReflectionProperty($project, 'uuid'))->setValue($project, $uuid);
+
+    $member = new Mosparo\Entity\ProjectMember();
+    $member->setProject($project);
+    $member->setUser($entityManager->getRepository(Mosparo\Entity\User::class)->findOneBy(['email' => getenv('MOSPARO_ADMIN_EMAIL')]));
+    $member->setRole(Mosparo\Entity\ProjectMember::ROLE_OWNER);
+
+    // Invisible: no checkbox, the check runs when the form is submitted. Only set
+    // here, so a design changed later in the UI is never overwritten.
+    $project->setConfigValue('designMode', 'invisible-simple');
+
+    $entityManager->persist($project);
+    $entityManager->persist($member);
+    $entityManager->flush();
+
+    // Without a rendered CSS file mosparo serves its default, visible design.
+    $kernel->getContainer()->get('lerd.design_helper')->generateCssCache($project);
+    $entityManager->flush();
+# The keys arnaud-ritti/mosparo-bundle reads. The container URL becomes the
+# service's domain once it has one, which both the browser and the app reach.
+env_vars:
+- MOSPARO_INSTANCE_URL=http://lerd-mosparo
+- MOSPARO_UUID=6c657264-0000-4000-8000-000000000001
+- MOSPARO_PUBLIC_KEY=lerd-public
+- MOSPARO_PRIVATE_KEY=lerd-private
+env_detect:
+  key: MOSPARO_INSTANCE_URL
+site_init:
+  # Run as root by lerd env, so ownership goes back to the web server's user.
+  exec: sh -c "php /lerd/site-init.php && chown -R www-data /mosparo-data"
+dashboard: http://localhost:8088
+# Served same-origin under /_svc/mosparo/ so the login form can be filled. Its
+# links start at the root, so the mount is stripped and the page rebased onto it.
+dashboard_proxy: true
+dashboard_proxy_strip: true
+dashboard_proxy_reroute: true
+dashboard_login:
+  fields:
+    "#field-email": MOSPARO_ADMIN_EMAIL
+    "#field-password": MOSPARO_ADMIN_PASSWORD
+  submit: form button[type="submit"]
+category: other
+icon: bolt
+color: "#206bc4"
+# Forms load mosparo's frontend from the site's own HTTPS origin, so it is
+# served on its own domain.
+# Remove it with: lerd service domain mosparo --remove
+domain: mosparo
+# Forms on a site fetch the frontend API and its assets (logo, CSS) cross-origin.
+# Turn it off with: lerd service domain mosparo --no-cors
+domain_cors: true
