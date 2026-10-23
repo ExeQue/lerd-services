@@ -16,10 +16,9 @@ category: other
 icon: bolt
 color: '#000000'
 env_vars:
-- UMAMI_SCRIPT_URL=http://localhost:3002/script.js
-- UMAMI_API_URL=http://lerd-umami:3000
+- UMAMI_URL=http://lerd-umami:3000/api
 - UMAMI_USERNAME=admin
 - UMAMI_PASSWORD=umami
 env_detect:
-  key: UMAMI_SCRIPT_URL
+  key: UMAMI_URL
 domain: umami

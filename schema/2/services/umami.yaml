@@ -23,14 +23,15 @@ dashboard_token_login:
 category: other
 icon: bolt
 color: "#000000"
+# The keys still-code/laravel-umami reads, UMAMI_URL being the API base. The
+# container URL becomes the service's domain once it has one.
 env_vars:
-- UMAMI_SCRIPT_URL=http://localhost:3002/script.js
-- UMAMI_API_URL=http://lerd-umami:3000
+- UMAMI_URL=http://lerd-umami:3000/api
 - UMAMI_USERNAME=admin
 - UMAMI_PASSWORD=umami
 env_detect:
-  key: UMAMI_SCRIPT_URL
+  key: UMAMI_URL
 # The tracker script is loaded by the browser from the app's own HTTPS origin,
-# so the service is served on its own domain, and lerd env rewrites the
-# localhost URLs above to it. Remove it with: lerd service domain umami --remove
+# so the service is served on its own domain.
+# Remove it with: lerd service domain umami --remove
 domain: umami
