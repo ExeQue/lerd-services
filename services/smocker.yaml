@@ -2,21 +2,19 @@ name: smocker
 label: Smocker
 image: ghcr.io/smocker-dev/smocker:1.0.0
 description: Smocker HTTP mock server for webhooks and outgoing requests, with scripted responses, delays and request history
+# Only the admin UI is published, for the dashboard. Apps reach both the mock
+# server and the admin API over the lerd network by container name.
+ports:
+- 8082:8081
 environment:
   SMOCKER_MOCK_SERVER_LISTEN_PORT: "8080"
   SMOCKER_CONFIG_LISTEN_PORT: "8081"
-# No published host ports: apps reach the mock server over the lerd network by
-# container name, and the admin API and UI are served on the service domain.
 env_vars:
   - SMOCKER_URL=http://lerd-smocker:8080
-  - SMOCKER_ADMIN_URL=https://smocker.test
+  - SMOCKER_ADMIN_URL=http://lerd-smocker:8081
 env_detect:
   key: SMOCKER_URL
-dashboard: https://smocker.test
+dashboard: http://localhost:8082
 category: testing
 icon: bolt
 color: "#b31729"
-# The admin API and UI, not the mock server a domain would otherwise land on.
-# Remove it with: lerd service domain smocker --remove
-domain: smocker
-domain_port: 8081
