@@ -80,6 +80,11 @@ files:
         session:
             cookie_samesite: none
             cookie_secure: true
+    # site-init.php renders a new project's CSS through this otherwise private service.
+    services:
+        lerd.design_helper:
+            alias: Mosparo\Helper\DesignHelper
+            public: true
 - target: /lerd/site-init.php
   # One project per site, owned by the admin, with the uuid and keys env_vars
   # writes. mosparo generates both at random, so they are set here instead.
@@ -122,8 +127,16 @@ files:
     $member->setUser($entityManager->getRepository(Mosparo\Entity\User::class)->findOneBy(['email' => 'admin@lerd.test']));
     $member->setRole(Mosparo\Entity\ProjectMember::ROLE_OWNER);
 
+    // Invisible: no checkbox, the check runs when the form is submitted. Only set
+    // here, so a design changed later in the UI is never overwritten.
+    $project->setConfigValue('designMode', 'invisible-simple');
+
     $entityManager->persist($project);
     $entityManager->persist($member);
+    $entityManager->flush();
+
+    // Without a rendered CSS file mosparo serves its default, visible design.
+    $kernel->getContainer()->get('lerd.design_helper')->generateCssCache($project);
     $entityManager->flush();
 env_vars:
 - MOSPARO_HOST=https://mosparo.test
