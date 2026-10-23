@@ -393,6 +393,18 @@
       "env_role": "redis"
     },
     {
+      "name": "umami",
+      "description": "Umami privacy-focused web analytics, backed by the lerd Postgres service (login: admin / umami)",
+      "dashboard": "http://localhost:3002",
+      "image": "ghcr.io/umami-software/umami:3.4",
+      "category": "other",
+      "icon": "bolt",
+      "color": "#000000",
+      "depends_on": [
+        "postgres"
+      ]
+    },
+    {
       "name": "mosparo",
       "description": "mosparo spam protection for forms, installed unattended on SQLite (login: admin@lerd.test / lerd)",
       "image": "docker.io/mosparo/mosparo:v1.5.12-alpine",

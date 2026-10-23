@@ -34,6 +34,7 @@
   <img src=".github/logos/selenium.svg" width="38" height="38" alt="selenium" title="selenium">
   <img src=".github/logos/solr.svg" width="38" height="38" alt="solr" title="solr">
   <img src=".github/logos/stripe-mock.svg" width="38" height="38" alt="stripe-mock" title="stripe-mock">
+  <img src=".github/logos/umami.svg" width="38" height="38" alt="umami" title="umami">
   <img src=".github/logos/valkey.svg" width="38" height="38" alt="valkey" title="valkey">
 </p>
 
@@ -92,6 +93,7 @@ All of it is data. None of it ships in the binary.
 | <img src=".github/logos/opensearch.svg" width="28" height="28" alt=""> | `opensearch` | OpenSearch single-node engine |
 | <img src=".github/logos/solr.svg" width="28" height="28" alt=""> | `solr` | Apache Solr, the search backend Drupal and TYPO3 expect |
 | <img src=".github/logos/typesense.svg" width="28" height="28" alt=""> | `typesense` | Typesense typo-tolerant search |
+| <img src=".github/logos/umami.svg" width="28" height="28" alt=""> | `umami` | Umami privacy-focused web analytics, backed by the lerd Postgres service |
 
 **Cache, queues & messaging**
 

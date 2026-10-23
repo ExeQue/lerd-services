@@ -1,0 +1,24 @@
+name: umami
+image: ghcr.io/umami-software/umami:3.4
+description: 'Umami privacy-focused web analytics, backed by the lerd Postgres service
+  (login: admin / umami)'
+ports:
+- 3002:3000
+environment:
+  DATABASE_URL: postgresql://postgres:lerd@lerd-postgres:5432/postgres?schema=umami
+  APP_SECRET: lerd
+  ALLOWED_FRAME_URLS: http://localhost:7073 http://127.0.0.1:7073 https://lerd.test
+    http://lerd.test http://lerd.localhost
+depends_on:
+- postgres
+dashboard: http://localhost:3002
+category: other
+icon: bolt
+color: '#000000'
+env_vars:
+- UMAMI_URL=http://lerd-umami:3000/api
+- UMAMI_USERNAME=admin
+- UMAMI_PASSWORD=umami
+env_detect:
+  key: UMAMI_URL
+domain: umami
